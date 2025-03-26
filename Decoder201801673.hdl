@@ -1,200 +1,141 @@
-// 顶层模块
+// 合并后的完整单文件模块
 CHIP Decoder201801673 {
     IN A, B, C, D;
     OUT a, b, c, d, e, f, g;
 
     PARTS:
-    a(A = A, B = B, C = C, D = D, a = a);
-    b(A = A, B = B, C = C, D = D, b = b);
-    c(A = A, B = B, C = C, D = D, c = c);
-    d(A = A, B = B, C = C, D = D, d = d);
-    e(A = A, B = B, C = C, D = D, e = e);
-    f(A = A, B = B, C = C, D = D, f = f);
-    g(A = A, B = B, C = C, D = D, g = g);
-}
+    // --- a 的逻辑 ---
+    Not(in = A, out = NOTA_a);
+    Not(in = B, out = NOTB_a);
+    Not(in = C, out = NOTC_a);
+    Not(in = D, out = NOTD_a);
 
-// 模块 a
-CHIP a {
-    IN A, B, C, D;
-    OUT a;
+    And(a = NOTB_a, b = NOTD_a, out = P1_a);
+    And(a = C, b = NOTD_a, out = P2_a);
+    And(a = A, b = B, out = P3_a);
+    And(a = A, b = C, out = P4_a);
 
-    PARTS:
-    Not(in = A, out = NOTA);
-    Not(in = B, out = NOTB);
-    Not(in = C, out = NOTC);
-    Not(in = D, out = NOTD);
+    Or(a = P1_a, b = P2_a, out = P12_a);
+    Or(a = P3_a, b = P4_a, out = P34_a);
+    Or(a = P12_a, b = P34_a, out = a);
 
-    And(a = NOTB, b = NOTD, out = P1);
-    And(a = C, b = NOTD, out = P2);
-    And(a = A, b = B, out = P3);
-    And(a = A, b = C, out = P4);
+    // --- b 的逻辑 ---
+    Not(in = A, out = NOTA_b);
+    Not(in = B, out = NOTB_b);
+    Not(in = C, out = NOTC_b);
+    Not(in = D, out = NOTD_b);
 
-    Or(a = P1, b = P2, out = P12);
-    Or(a = P3, b = P4, out = P34);
-    Or(a = P12, b = P34, out = a);
-}
+    And(a = NOTB_b, b = NOTD_b, out = P1_b);
+    And(a = NOTB_b, b = NOTC_b, out = P2_b);
+    And(a = NOTA_b, b = C, out = NOTAc_b);
+    And(a = NOTAc_b, b = D, out = P3_b);
+    And(a = A, b = NOTC_b, out = ANOTC_b);
+    And(a = ANOTC_b, b = D, out = P4_b);
+    And(a = NOTA_b, b = NOTC_b, out = NOTAC_b);
+    And(a = NOTAC_b, b = NOTD_b, out = P5_b);
 
-// 模块 b
-CHIP b {
-    IN A, B, C, D;
-    OUT b;
+    // b 的 Or5 结构
+    Or(a = P1_b, b = P2_b, out = ab1);
+    Or(a = ab1, b = P3_b, out = ab2);
+    Or(a = ab2, b = P4_b, out = ab3);
+    Or(a = ab3, b = P5_b, out = b);
 
-    PARTS:
-    Not(in = A, out = NOTA);
-    Not(in = B, out = NOTB);
-    Not(in = C, out = NOTC);
-    Not(in = D, out = NOTD);
+    // --- c 的逻辑 ---
+    Not(in = A, out = NOTA_c);
+    Not(in = B, out = NOTB_c);
+    Not(in = C, out = NOTC_c);
+    Not(in = D, out = NOTD_c);
 
-    And(a = NOTB, b = NOTD, out = P1);
-    And(a = NOTB, b = NOTC, out = P2);
+    And(a = NOTB_c, b = NOTD_c, out = P1_c);
+    And(a = B, b = C, out = P2_c);
+    And(a = A, b = NOTD_c, out = P3_c);
+    And(a = NOTA_c, b = C, out = P4_c);
+    And(a = A, b = NOTB_c, out = NOTBa_c);
+    And(a = NOTBa_c, b = NOTC_c, out = P5_c);
+    And(a = NOTA_c, b = B, out = NOTAb_c);
+    And(a = NOTAb_c, b = D, out = P6_c);
 
-    And(a = NOTA, b = C, out = NOTAc);
-    And(a = NOTAc, b = D, out = P3);
+    Or(a = P1_c, b = P2_c, out = ca1);
+    Or(a = ca1, b = P3_c, out = ca2);
+    Or(a = ca2, b = P4_c, out = ca3);
+    Or(a = ca3, b = P5_c, out = ca4);
+    Or(a = ca4, b = P6_c, out = c);
 
-    And(a = A, b = NOTC, out = ANOTC);
-    And(a = ANOTC, b = D, out = P4);
+    // --- d 的逻辑 ---
+    Not(in = A, out = NOTA_d);
+    Not(in = B, out = NOTB_d);
+    Not(in = C, out = NOTC_d);
+    Not(in = D, out = NOTD_d);
 
-    And(a = NOTA, b = NOTC, out = NOTAC);
-    And(a = NOTAC, b = NOTD, out = P5);
+    And(a = A, b = NOTB_d, out = P1_d);
+    And(a = NOTC_d, b = D, out = P2_d);
+    And(a = NOTA_d, b = B, out = P3_d);
+    And(a = NOTA_d, b = D, out = P4_d);
+    And(a = NOTB_d, b = NOTC_d, out = P5_d);
 
-    Or5(a = P1, b = P2, c = P3, d = P4, e = P5, out = b);
-}
+    Or(a = P1_d, b = P2_d, out = da1);
+    Or(a = da1, b = P3_d, out = da2);
+    Or(a = da2, b = P4_d, out = da3);
+    Or(a = da3, b = P5_d, out = d);
 
-// 模块 c
-CHIP c {
-    IN A, B, C, D;
-    OUT c;
+    // --- e 的逻辑 ---
+    Not(in = A, out = NOTA_e);
+    Not(in = B, out = NOTB_e);
+    Not(in = C, out = NOTC_e);
+    Not(in = D, out = NOTD_e);
 
-    PARTS:
-    Not(in = A, out = NOTA);
-    Not(in = B, out = NOTB);
-    Not(in = C, out = NOTC);
-    Not(in = D, out = NOTD);
+    And(a = NOTB_e, b = C, out = P1_e);
+    And(a = C, b = NOTD_e, out = P2_e);
+    And(a = A, b = NOTB_e, out = P3_e);
+    And(a = A, b = D, out = P4_e);
+    And(a = NOTC_e, b = NOTA_e, out = tmp_e);
+    And(a = B, b = tmp_e, out = P5_e);
 
-    And(a = NOTB, b = NOTD, out = P1);
-    And(a = B, b = C, out = P2);
-    And(a = A, b = NOTD, out = P3);
-    And(a = NOTA, b = C, out = P4);
+    Or(a = P1_e, b = P2_e, out = ea1);
+    Or(a = ea1, b = P3_e, out = ea2);
+    Or(a = ea2, b = P4_e, out = ea3);
+    Or(a = ea3, b = P5_e, out = e);
 
-    And(a = A, b = NOTB, out = NOTBa);
-    And(a = NOTBa, b = NOTC, out = P5);
+    // --- f 的逻辑 ---
+    Not(in = A, out = NOTA_f);
+    Not(in = B, out = NOTB_f);
+    Not(in = C, out = NOTC_f);
+    Not(in = D, out = NOTD_f);
 
-    And(a = NOTA, b = B, out = NOTAb);
-    And(a = NOTAb, b = D, out = P6);
+    And(a = NOTC_f, b = NOTD_f, out = P1_f);
+    And(a = NOTA_f, b = B, out = AB_f);
+    And(a = AB_f, b = NOTC_f, out = P2_f);
+    And(a = B, b = NOTD_f, out = P3_f);
+    And(a = A, b = C, out = P4_f);
+    And(a = A, b = NOTB_f, out = P5_f);
 
-    Or5(a = P1, b = P2, c = P3, d = P4, e = P5, out = P7);
-    Or(a = P6, b = P7, out = c);
-}
+    Or(a = P1_f, b = P2_f, out = fa1);
+    Or(a = P3_f, b = P4_f, out = fa2);
+    Or(a = fa2, b = P5_f, out = fa3);
+    Or(a = fa1, b = fa3, out = f);
 
-// 模块 d
-CHIP d {
-    IN A, B, C, D;
-    OUT d;
+    // --- g 的逻辑 ---
+    Not(in = A, out = NOTA_g);
+    Not(in = B, out = NOTB_g);
+    Not(in = C, out = NOTC_g);
+    Not(in = D, out = NOTD_g);
 
-    PARTS:
-    Not(in = A, out = NOTA);
-    Not(in = B, out = NOTB);
-    Not(in = C, out = NOTC);
-    Not(in = D, out = NOTD);
+    And(a = A, b = B, out = AB_g);
+    And(a = AB_g, b = NOTD_g, out = P1_g);
+    And(a = NOTB_g, b = NOTC_g, out = BC_g);
+    And(a = BC_g, b = NOTD_g, out = P2_g);
+    And(a = B, b = NOTC_g, out = P3a_g);
+    And(a = P3a_g, b = D, out = P3_g);
+    And(a = NOTA_g, b = C, out = P4a_g);
+    And(a = P4a_g, b = NOTD_g, out = P4_g);
+    And(a = A, b = NOTB_g, out = P5a_g);
+    And(a = P5a_g, b = D, out = P5_g);
+    And(a = NOTA_g, b = NOTB_g, out = AB_g2);
+    And(a = AB_g2, b = C, out = P6_g);
 
-    And(a = A, b = NOTB, out = P1);
-    And(a = NOTC, b = D, out = P2);
-    And(a = NOTA, b = B, out = P3);
-    And(a = NOTA, b = D, out = P4);
-    And(a = NOTB, b = NOTC, out = P5);
-
-    Or5(a = P1, b = P2, c = P3, d = P4, e = P5, out = d);
-}
-
-// 模块 e
-CHIP e {
-    IN A, B, C, D;
-    OUT e;
-
-    PARTS:
-    Not(in = A, out = NOTA);
-    Not(in = B, out = NOTB);
-    Not(in = C, out = NOTC);
-    Not(in = D, out = NOTD);
-
-    And(a = NOTB, b = C, out = P1);
-    And(a = C, b = NOTD, out = P2);
-    And(a = A, b = NOTB, out = P3);
-    And(a = A, b = D, out = P4);
-
-    And(a = NOTC, b = NOTA, out = out);
-    And(a = B, b = out, out = P5);
-
-    Or5(a = P1, b = P2, c = P3, d = P4, e = P5, out = e);
-}
-
-// 模块 f
-CHIP f {
-    IN A, B, C, D;
-    OUT f;
-
-    PARTS:
-    Not(in = A, out = notA);
-    Not(in = B, out = notB);
-    Not(in = C, out = notC);
-    Not(in = D, out = notD);
-
-    And(a = notC, b = notD, out = notCnotD);
-
-    And(a = notA, b = B, out = notAB);
-    And(a = notAB, b = notC, out = notABnotC);
-
-    And(a = B, b = notD, out = BnotD);
-    And(a = A, b = C, out = AC);
-    And(a = A, b = notB, out = AnotB);
-
-    Or(a = notCnotD, b = notABnotC, out = one);
-    Or(a = BnotD, b = AC, out = BnotDorAC);
-    Or(a = BnotDorAC, b = AnotB, out = two);
-    Or(a = one, b = two, out = f);
-}
-
-// 模块 g
-CHIP g {
-    IN A, B, C, D;
-    OUT g;
-
-    PARTS:
-    Not(in = A, out = NOTA);
-    Not(in = B, out = NOTB);
-    Not(in = C, out = NOTC);
-    Not(in = D, out = NOTD);
-
-    And(a = A, b = B, out = AB);
-    And(a = AB, b = NOTD, out = P1);
-
-    And(a = NOTB, b = NOTC, out = NOTBC);
-    And(a = NOTBC, b = NOTD, out = P2);
-
-    And(a = B, b = NOTC, out = BNOTC);
-    And(a = BNOTC, b = D, out = P3);
-
-    And(a = NOTA, b = C, out = CNOTA);
-    And(a = CNOTA, b = NOTD, out = P4);
-
-    And(a = A, b = NOTB, out = ANOTB);
-    And(a = ANOTB, b = D, out = P5);
-
-    And(a = NOTA, b = NOTB, out = NOTAB);
-    And(a = NOTAB, b = C, out = P6);
-
-    Or5(a = P1, b = P2, c = P3, d = P4, e = P5, out = P7);
-    Or(a = P6, b = P7, out = g);
-}
-
-// 模块 Or5
-CHIP Or5 {
-    IN a, b, c, d, e;
-    OUT out;
-
-    PARTS:
-    Or(a = a, b = b, out = ab);
-    Or(a = ab, b = c, out = abc);
-    Or(a = abc, b = d, out = abcd);
-    Or(a = abcd, b = e, out = out);
-}
+    Or(a = P1_g, b = P2_g, out = g1);
+    Or(a = P3_g, b = P4_g, out = g2);
+    Or(a = P5_g, b = P6_g, out = g3);
+    Or(a = g1, b = g2, out = g4);
+    Or(a = g4, b = g3, out = g);
+} 
